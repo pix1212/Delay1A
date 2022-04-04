@@ -8,7 +8,9 @@ namespace Delay1
         static void Main(string[] args)
         {
             Board board = new Board();
-            board.Initialize(25);
+            Player player = new Player();
+            board.Initialize(25, player);
+            player.Initialize(1, 1);
 
             Console.CursorVisible = false;
 

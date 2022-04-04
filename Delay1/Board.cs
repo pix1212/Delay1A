@@ -11,6 +11,8 @@ namespace Delay1
         const char CIRCLE = '\u25cf';
         public TileType[,] _tile;
         public int _size;
+
+        Player _player;
         
         public enum TileType
         {
@@ -20,8 +22,9 @@ namespace Delay1
 
 
 
-        public void Initialize(int size)
+        public void Initialize(int size, Player player)
         {
+            _player = player;
             _tile = new TileType[size, size];
             _size = size;
 
@@ -90,8 +93,16 @@ namespace Delay1
             {
                 for (int x = 0; x < _size; x++)
                 {
-                    Console.ForegroundColor = GetTileColor(_tile[y, x]);
-
+                    //플레이어 좌표, x.y일치시 플레이서 색상으로 덧칠
+                    if (y == _player.PosY && x == _player.PosX)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Blue;
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = GetTileColor(_tile[y, x]);
+                    }
+                                       
                     Console.Write(CIRCLE);
                 }
                 Console.WriteLine();
