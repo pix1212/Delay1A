@@ -9,8 +9,11 @@ namespace Delay1
     class Board
     {
         const char CIRCLE = '\u25cf';
-        public TileType[,] _tile;
-        public int _size;
+        public TileType[,] Tile { get; private set; }
+        public int Size { get; private set; }
+
+        public int DestY { get; private set; }
+        public int DestX { get; private set; }
 
         Player _player;
         
@@ -24,9 +27,16 @@ namespace Delay1
 
         public void Initialize(int size, Player player)
         {
+            if (size % 2 == 0)
+                return;
+
             _player = player;
-            _tile = new TileType[size, size];
-            _size = size;
+
+            Tile = new TileType[size, size];
+            Size = size;
+
+            DestY = Size - 2;
+            DestX = Size - 2;
 
             //길을 막아버리는 작업
 
@@ -37,49 +47,49 @@ namespace Delay1
 
         void GenerateByBinaryTree()
         {
-            for (int y = 0; y < _size; y++)
+            for (int y = 0; y < Size; y++)
             {
-                for (int x = 0; x < _size; x++)
+                for (int x = 0; x < Size; x++)
                 {
                     if (x % 2 == 0 || y % 2 == 0)
-                        _tile[y, x] = TileType.Wall;
+                        Tile[y, x] = TileType.Wall;
 
                     else
-                        _tile[y, x] = TileType.Empty;
+                        Tile[y, x] = TileType.Empty;
                 }
             }
 
             //랜덤으로 우측 또는 아래로 길을 뚫는 작업
             Random rand = new Random();
-            for (int y = 0; y < _size; y++)
+            for (int y = 0; y < Size; y++)
             {
-                for (int x = 0; x < _size; x++)
+                for (int x = 0; x < Size; x++)
                 {
                     if (x % 2 == 0 || y % 2 == 0)
                         continue;
 
-                    if (y == _size - 2 && x == _size - 2)
+                    if (y == Size - 2 && x == Size - 2)
                         continue;
 
-                    if (y == _size - 2)
+                    if (y == Size - 2)
                     {
-                        _tile[y, x + 1] = TileType.Empty;
+                        Tile[y, x + 1] = TileType.Empty;
                         continue;
                     }
 
-                    if (x == _size - 2)
+                    if (x == Size - 2)
                     {
-                        _tile[y + 1, x] = TileType.Empty;
+                        Tile[y + 1, x] = TileType.Empty;
                         continue;
                     }
 
                     if (rand.Next(0, 2) == 0)
                     {
-                        _tile[y, x + 1] = TileType.Empty;
+                        Tile[y, x + 1] = TileType.Empty;
                     }
                     else
                     {
-                        _tile[y + 1, x] = TileType.Empty;
+                        Tile[y + 1, x] = TileType.Empty;
                     }
                 }
             }
@@ -89,19 +99,20 @@ namespace Delay1
         public void Render()
         {
             ConsoleColor prevColor = Console.ForegroundColor;
-            for (int y = 0; y < _size; y++)
+            for (int y = 0; y < Size; y++)
             {
-                for (int x = 0; x < _size; x++)
+                for (int x = 0; x < Size; x++)
                 {
                     //플레이어 좌표, x.y일치시 플레이서 색상으로 덧칠
                     if (y == _player.PosY && x == _player.PosX)
-                    {
                         Console.ForegroundColor = ConsoleColor.Blue;
-                    }
+
+                    else if (y == DestY && x == DestX)
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+
                     else
-                    {
-                        Console.ForegroundColor = GetTileColor(_tile[y, x]);
-                    }
+                        Console.ForegroundColor = GetTileColor(Tile[y, x]);
+                    
                                        
                     Console.Write(CIRCLE);
                 }
